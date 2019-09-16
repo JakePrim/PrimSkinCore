@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.util.Log;
 
 /**
  * @author prim
@@ -69,20 +70,22 @@ public class SkinResources {
         }
 
         //通过当前应用资源获取到 资源名 和 资源类型，然后通过资源名  资源类型 资源ID 获取到皮肤包中的资源ID
-        String resourceName = mAppResources.getResourceName(resId);
+        String resourceName = mAppResources.getResourceEntryName(resId);
         String resourceTypeName = mAppResources.getResourceTypeName(resId);
         //getIdentifier ?? 获取到皮肤包对应到资源ID
         int skinId = mSkinResources.getIdentifier(resourceName, resourceTypeName, mSkinName);
-
         return skinId;
     }
 
-    public int getColor(int resId){
-        if (isDefalueSkin){
+    private static final String TAG = "SkinResources";
+
+    public int getColor(int resId) {
+        if (isDefalueSkin) {
             return mAppResources.getColor(resId);
         }
         int skinId = getIdentfier(resId);
-        if (skinId == 0){
+        Log.e(TAG, "getColor: " + skinId);
+        if (skinId == 0) {
             return mAppResources.getColor(resId);
         }
         return mSkinResources.getColor(skinId);

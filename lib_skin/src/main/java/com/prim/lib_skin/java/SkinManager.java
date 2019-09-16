@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 
 import java.lang.reflect.Method;
 import java.util.Observable;
@@ -49,6 +50,8 @@ public class SkinManager extends Observable {
         loadSkin(SkinPreference.getInstance().getSkin());
     }
 
+    private static final String TAG = "SkinManager";
+
     /**
      * 加载皮肤包
      *
@@ -81,6 +84,7 @@ public class SkinManager extends Observable {
                 //获取一个apk的包名
                 PackageInfo info = packageManager.getPackageArchiveInfo(path, PackageManager.GET_ACTIVITIES);
                 String packageName = info.packageName;
+                Log.e(TAG, "loadSkin: " + packageName);
                 //更换为皮肤包资源
                 SkinResources.getInstance().applySkin(skinResources, packageName);
                 //记录使用的皮肤包

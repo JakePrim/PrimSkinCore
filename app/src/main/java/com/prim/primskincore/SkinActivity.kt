@@ -20,6 +20,7 @@ class SkinActivity : AppCompatActivity() {
     }
 
     fun change(view: View) {
+        SkinManager.getInstance().loadSkin("/sdcard/app-skin.skin")
 
     }
 
