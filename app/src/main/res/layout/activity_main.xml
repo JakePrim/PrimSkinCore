@@ -21,6 +21,8 @@
         android:text="个性换肤"/>
 
 
+
+
     <!--测试换肤==> viewPager 与 fragment-->
 <!--    <com.dongnao.dnskin.widget.MyTabLayout-->
 <!--        android:id="@+id/tabLayout"-->

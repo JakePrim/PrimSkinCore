@@ -47,7 +47,7 @@ public class SkinLayoutFactory implements LayoutInflater.Factory2, Observer {
             view = createView(name, context, attrs);
         }
         //采集view的属性
-        skinAttribute.load(view,attrs);
+        skinAttribute.load(view, attrs);
         return view;
     }
 
@@ -57,10 +57,11 @@ public class SkinLayoutFactory implements LayoutInflater.Factory2, Observer {
     }
 
     private View createViewFromTag(Context context, String name, AttributeSet attrs) {
-        if (name.contains(".")) {//如果布局xml中的view 名包含.表示为自定义view 此处先不做处理
-            return null;
-        }
         View view = null;
+        if (name.contains(".")) {//如果布局xml中的view 名包含.表示为自定义view 此处先不做处理
+            view = createView(name, context, attrs);
+            return view;
+        }
         for (String prefix : sClassPrefixList) {//遍历view属于哪个包中 然后反射创建view对象
             try {
                 view = createView(prefix + name, context, attrs);
