@@ -1,8 +1,10 @@
 package com.prim.lib_skin.java;
 
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -35,14 +37,28 @@ public class SkinAttribute {
         mAttributes.add("drawableTop");
         mAttributes.add("drawableRight");
         mAttributes.add("drawableBottom");
+        mAttributes.add("skinTypeFace");
     }
 
+    private Typeface typeface;
+
+    public SkinAttribute(Typeface typeface) {
+        this.typeface = typeface;
+    }
+
+    public void setTypeface(Typeface typeface) {
+        this.typeface = typeface;
+    }
+
+    private static final String TAG = "SkinAttribute";
+
     public void load(View view, AttributeSet attrs) {
-        List<SkinPair> skinPairs = new ArrayList<>();
+        List<SkinPair> mSkinPars = new ArrayList<>();
         //获取属性
         for (int i = 0; i < attrs.getAttributeCount(); i++) {
             //获取属性名
             String attributeName = attrs.getAttributeName(i);
+            Log.e(TAG, "   " + attributeName);
             //匹配要修改的属性名
             if (mAttributes.contains(attributeName)) {
                 //获取属性值
@@ -54,23 +70,25 @@ public class SkinAttribute {
                 if (attributeValue.startsWith("?")) {
                     //attrId
                     int attrId = Integer.parseInt(attributeValue.substring(1));
-                    resId = utils.getResId(view.getContext(), new int[]{attrId})[0];
+                    resId = SkinThemeUtils.getResId(view.getContext(), new int[]{attrId})[0];
                 } else {
                     //@1232311
                     resId = Integer.parseInt(attributeValue.substring(1));
                 }
-                if (resId != 0) {
-                    //将匹配的都存储下来
-                    SkinPair skinPair = new SkinPair(attributeName, resId);
-                    skinPairs.add(skinPair);
-                }
+                //将匹配的都存储下来
+                SkinPair skinPair = new SkinPair(attributeName, resId);
+                mSkinPars.add(skinPair);
             }
         }
         //将布局中每个view与之对应的属性集合放入到对应的view集合中
-        if (!skinPairs.isEmpty()) {
-            SkinView skinView = new SkinView(view, skinPairs);
-            //每次新加载activity就要进行换肤
-            applySkin();
+        if (!mSkinPars.isEmpty()) {
+            SkinView skinView = new SkinView(view, mSkinPars);
+            skinView.applySkin(typeface);
+            skinViews.add(skinView);
+        } else if (view instanceof TextView || view instanceof SkinViewSupport) {
+            //没有属性满足 但是需要修改字体
+            SkinView skinView = new SkinView(view, mSkinPars);
+            skinView.applySkin(typeface);
             skinViews.add(skinView);
         }
     }
@@ -81,7 +99,7 @@ public class SkinAttribute {
     public void applySkin() {
         //遍历保存的表然后换皮肤
         for (SkinView skinView : skinViews) {
-            skinView.applySkin();
+            skinView.applySkin(typeface);
         }
     }
 
@@ -97,9 +115,14 @@ public class SkinAttribute {
             this.skinPairs = skinPairs;
         }
 
-        public void applySkin() {
+        private static final String TAG = "SkinView";
+
+        public void applySkin(Typeface typeface) {
+            applySkinTypeface(typeface);
+            applySkinSupportView();
             for (SkinPair skinPair : skinPairs) {
                 Drawable left = null, right = null, top = null, bottom = null;
+                Log.e(TAG, "applySkin: " + skinPair.attrName);
                 switch (skinPair.attrName) {
                     case "background":
                         Object background = SkinResources.getInstance().getBackground(skinPair.resId);
@@ -141,11 +164,27 @@ public class SkinAttribute {
                     case "drawableBottom":
                         bottom = SkinResources.getInstance().getDrawable(skinPair.resId);
                         break;
+                    case "skinTypeFace"://布局的字体更换
+                        Typeface typeface1 = SkinResources.getInstance().getTypeface(skinPair.resId);
+                        applySkinTypeface(typeface1);
+                        break;
                 }
                 if (null != left || null != right || null != top || null != bottom) {
                     ((TextView) view).setCompoundDrawablesWithIntrinsicBounds(left, top, right,
                             bottom);
                 }
+            }
+        }
+
+        private void applySkinSupportView() {
+            if (view instanceof SkinViewSupport) {
+                ((SkinViewSupport) view).applySkin();
+            }
+        }
+
+        private void applySkinTypeface(Typeface typeface) {
+            if (view instanceof TextView) {
+                ((TextView) view).setTypeface(typeface);
             }
         }
     }

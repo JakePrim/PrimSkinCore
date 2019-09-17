@@ -1,12 +1,14 @@
 package com.prim.lib_skin.java;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
@@ -35,12 +37,19 @@ public class SkinLayoutFactory implements LayoutInflater.Factory2, Observer {
 
     private SkinAttribute skinAttribute;
 
-    public SkinLayoutFactory() {
-        skinAttribute = new SkinAttribute();
+    private Activity activity;
+
+    private Typeface typeface;
+
+    public SkinLayoutFactory(Typeface typeface, Activity activity) {
+        this.activity = activity;
+        this.typeface = typeface;
+        this.skinAttribute = new SkinAttribute(typeface);
     }
 
     @Override
     public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
+
         //参考系统的实现
         View view = createViewFromTag(context, name, attrs);
         if (view == null) {
@@ -101,6 +110,12 @@ public class SkinLayoutFactory implements LayoutInflater.Factory2, Observer {
 
     @Override
     public void update(Observable o, Object arg) {
+        //动态更新状态栏
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            SkinThemeUtils.updateStatusBar(activity);
+        }
+        Typeface typeface = SkinThemeUtils.updateTypeface(activity);
+        skinAttribute.setTypeface(typeface);
         skinAttribute.applySkin();
     }
 }

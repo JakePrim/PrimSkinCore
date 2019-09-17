@@ -26,6 +26,8 @@ public class SkinManager extends Observable {
 
     private Application application;
 
+    private SkinActivityLifecycle skinActivityLifecycle;
+
     public static SkinManager init(Application application) {
         if (instance == null) {
             synchronized (SkinManager.class) {
@@ -46,7 +48,8 @@ public class SkinManager extends Observable {
         SkinPreference.init(application);
         SkinResources.init(application);
         //监听所有的activity生命周期
-        application.registerActivityLifecycleCallbacks(new SkinActivityLifecycle());
+        skinActivityLifecycle = new SkinActivityLifecycle();
+        application.registerActivityLifecycleCallbacks(skinActivityLifecycle);
         loadSkin(SkinPreference.getInstance().getSkin());
     }
 
@@ -98,6 +101,10 @@ public class SkinManager extends Observable {
         //通知观察者 //应用皮肤包
         setChanged();
         notifyObservers();
+    }
+
+    public void updateSkin(Activity activity) {
+        skinActivityLifecycle.updateSkin(activity);
     }
 
 

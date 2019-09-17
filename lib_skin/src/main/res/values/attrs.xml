@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 设置自定义属性 自定义字体 -->
+    <attr name="skinTypeFace" format="string" />
+</resources>

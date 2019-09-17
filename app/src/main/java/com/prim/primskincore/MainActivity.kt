@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.viewpager.widget.ViewPager
 import androidx.fragment.app.Fragment
+import com.prim.lib_skin.java.SkinManager
 
 
 class MainActivity : AppCompatActivity() {
@@ -27,6 +28,8 @@ class MainActivity : AppCompatActivity() {
         val myFragmentPagerAdapter = MyFragmentPagerAdapter(supportFragmentManager, list, listTitle)
         viewPager.setAdapter(myFragmentPagerAdapter)
         tabLayout.setupWithViewPager(viewPager)
+
+        SkinManager.getInstance().updateSkin(this)
     }
 
     fun skinSelect(view: View) {

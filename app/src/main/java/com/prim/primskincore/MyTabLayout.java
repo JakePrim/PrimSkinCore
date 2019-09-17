@@ -1,10 +1,13 @@
 package com.prim.primskincore;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 
 import com.google.android.material.tabs.TabLayout;
+import com.prim.lib_skin.java.SkinResources;
+import com.prim.lib_skin.java.SkinViewSupport;
 
 /**
  * @author prim
@@ -14,7 +17,7 @@ import com.google.android.material.tabs.TabLayout;
  * @contact https://jakeprim.cn
  * @name PrimSkinCore
  */
-public class MyTabLayout extends TabLayout {
+public class MyTabLayout extends TabLayout implements SkinViewSupport {
 
     int tabIndicatorColorResId;
     int tabTextColorResId;
@@ -36,17 +39,16 @@ public class MyTabLayout extends TabLayout {
         a.recycle();
     }
 
-//    @Override
-//    public void applySkin() {
-//        if (tabIndicatorColorResId != 0) {
-//            int tabIndicatorColor = SkinResources.getInstance().getColor(tabIndicatorColorResId);
-//            setSelectedTabIndicatorColor(tabIndicatorColor);
-//        }
-//
-//        if (tabTextColorResId != 0) {
-//            ColorStateList tabTextColor = SkinResources.getInstance().getColorStateList
-//                    (tabTextColorResId);
-//            setTabTextColors(tabTextColor);
-//        }
-//    }
+    @Override
+    public void applySkin() {
+        if (tabIndicatorColorResId != 0) {
+            int color = SkinResources.getInstance().getColor(tabIndicatorColorResId);
+            setSelectedTabIndicatorColor(color);
+        }
+
+        if (tabTextColorResId != 0) {
+            ColorStateList colorStateList = SkinResources.getInstance().getColorStateList(tabTextColorResId);
+            setTabTextColors(colorStateList);
+        }
+    }
 }

@@ -2,6 +2,8 @@ package com.prim.lib_skin.java;
 
 import android.app.Activity;
 import android.app.Application;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 
@@ -24,6 +26,13 @@ public class SkinActivityLifecycle implements Application.ActivityLifecycleCallb
 
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+        //更新状态栏
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            SkinThemeUtils.updateStatusBar(activity);
+        }
+        Typeface typeface = SkinThemeUtils.updateTypeface(activity);
+
+
         //拿到每个activity的布局加载器
         LayoutInflater layoutInflater = LayoutInflater.from(activity);
         //mFactorySet 如果为true 抛出异常，有可能会出现这种情况，通过反射将mFactorySet设置为false
@@ -35,13 +44,13 @@ public class SkinActivityLifecycle implements Application.ActivityLifecycleCallb
             e.printStackTrace();
         }
         //自定义布局处理工厂
-        SkinLayoutFactory factory = new SkinLayoutFactory();
+        SkinLayoutFactory factory = new SkinLayoutFactory(typeface, activity);
         //设置工厂
         LayoutInflaterCompat.setFactory2(layoutInflater, factory);
 
         //注册观察者
-        SkinManager.getInstance().addObserver(factory);
         mLayoutFactoryMap.put(activity, factory);
+        SkinManager.getInstance().addObserver(factory);
 
     }
 
@@ -75,6 +84,13 @@ public class SkinActivityLifecycle implements Application.ActivityLifecycleCallb
         SkinLayoutFactory layoutFactory = mLayoutFactoryMap.remove(activity);
         if (layoutFactory != null) {
             SkinManager.getInstance().deleteObserver(layoutFactory);
+        }
+    }
+
+    public void updateSkin(Activity activity) {
+        SkinLayoutFactory skinLayoutInflaterFactory = mLayoutFactoryMap.get(activity);
+        if (skinLayoutInflaterFactory != null) {
+            skinLayoutInflaterFactory.update(null, null);
         }
     }
 }
